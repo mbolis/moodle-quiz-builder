@@ -1,0 +1,51 @@
+ol {
+	list-style : none;
+	counter-reset : item;
+	margin : 0.5em 0;
+	border-bottom : 1px solid silver;
+}
+ol ol {
+	margin : 0.5em 0;
+	border-bottom : 1px solid gainsboro;
+}
+ol > li {
+	padding : 0.5em 0;
+	border-bottom : 1px solid silver;
+}
+ol ol > li {
+	border-bottom : 1px solid gainsboro;
+}
+ol > li::before {
+	display : inline-block;
+	content : counter(item) ". ";
+	counter-increment : item;
+	width : 2em;
+	margin-left : -2em;
+	font-size : 120%;
+	font-weight : bold;
+	vertical-align : middle;
+}
+li:last-child {
+	border : none;
+}
+.form-group {
+	margin-top : 0.5em;
+}
+.option-value input {
+	max-width : 48px;
+}
+@media (min-width: 768px) {
+	.option-text input {
+		min-width : 340px;
+	}
+}
+@media (min-width: 992px) {
+	.option-text input {
+		min-width : 480px;
+	}
+}
+@media (min-width: 1200px) {
+	.option-text input {
+		min-width : 700px;
+	}
+}
