@@ -2,8 +2,11 @@
 
 +function() {
 	var validTags = [
-		'b', 'i', 'u', 'ul', 'li',
+		'b', 'i', 'u', 'ul', 'ol', 'li', 'pre', 'strike', 'sub', 'sup',
+		'span', 'span\\s+style\\s*=\\s*(&quot;|&apos;)(?:(?!\\1).)*\\1', // <span style="...">
+		'div', 'div\\s+style\\s*=\\s*(&quot;|&apos;)(?:(?!\\1).)*\\1', // <div style="...">
 		'hr\\s*/?', // <hr/>
+		'br\\s*/?', // <br/>
 		'font', 'font\\s+color\\s*=\\s*(&quot;|&apos;)(?:(?!\\1).)*\\1' // <font color="red">
 	].map(function(tag) {
 		return new RegExp('&lt;/?' + tag + '&gt;', 'ig');
@@ -24,7 +27,7 @@
 			}
 		}
 
-		return output;
+		return output.replace(/&amp;(\w+);/g, function($0, $1) { return '&'+$1+';'; });
 	};
 }();
 
