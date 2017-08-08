@@ -69,9 +69,9 @@ Question.prototype.toString = function() {
 		case 'long':
 			return out + '{}';
 		case 'multi':
-			return out + multiOptions(this.options).escapeHTML(true);
+			return out + multiOptions(this.options);
 		case 'single':
-			return out + singleOptions(this.options).escapeHTML(true);
+			return out + singleOptions(this.options);
 		case 'dehnadi':
 			return out + dehnadiCode(this.options) + dehnadiOptions(this.options);
 	}
@@ -86,7 +86,7 @@ function multiOptions(options) {
 
 	return '{\n' + options.map(function(opt) {
 		var value = opt.value ? opt.value / total * 100 : defaultValue;
-		return '\t~%' + value.toFixed(5) + '%' + opt.text.replace(/([~=#{}])/g, '\\$1');
+		return '\t~%' + value.toFixed(5) + '%' + opt.text.replace(/([~=#{}])/g, '\\$1').escapeHTML(true);
 	}).join('\n') + '\n}';
 }
 function singleOptions(options) {
@@ -94,7 +94,7 @@ function singleOptions(options) {
 			.reduce(function(max, val) { if (val > max) return val; else return max; });
 
 	return '{\n' + options.map(function(opt) {
-		var text = opt.text.replace(/([~=#{}])/g, '\\$1');
+		var text = opt.text.replace(/([~=#{}])/g, '\\$1').escapeHTML(true);
 		if (opt.value === max) return '\t=' + text;
 		if (opt.value) return '\t~%' + (opt.value / max * 100).toFixed(5) + '%' + text;
 		return '\t~' + text;
