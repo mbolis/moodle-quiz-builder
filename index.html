@@ -8,6 +8,7 @@
 		<link rel=stylesheet href=css/bootstrap.css />
 		<link rel=stylesheet href=css/style.css />
 		<script src=js/vue.js></script>
+		<script src=js/he.js></script>
 
 	</head>
 	<body>
@@ -27,6 +28,7 @@
 										<option v-for="opt in questionTypes" :value=opt.type>{{ opt.text }}</option>
 									</select>
 								</div>
+                                <a class="btn btn-default btn-circle pull-right glyphicon glyphicon-remove" @click=question.remove></a>
 							</div>
 							<div class=form-group>
 								<label :for="'question_'+i+'_title'" class="control-label col-sm-2 col-md-1">Title:</label>
@@ -37,14 +39,16 @@
 							<div class=form-group>
 								<label :for="'question_'+i+'_text'" class="control-label col-sm-2 col-md-1">Text:</label>
 								<div class="col-sm-10">
-									<textarea :id="'question_'+i+'_text'" class=form-control v-model=question.text></textarea>
+									<textarea :id="'question_'+i+'_text'" class=form-control rows=5 v-model=question.text></textarea>
 								</div>
 							</div>
 							<div class=form-group v-if=question.showOptions>
 								<label class="control-label col-sm-2 col-md-1">Options:</label>
+								<button type=button class="btn btn-default" @click=question.addOption>Add Option</button>
 							</div>
 							<div class=form-group v-if=question.showInstructions>
 								<label class="control-label col-sm-2 col-md-1">Instructions:</label>
+								<button type=button class="btn btn-default" @click=question.addOption>Add Instruction</button>
 							</div>
 						</form>
 						<div v-if=question.showOptions class="form-inline col-sm-offset-1">
@@ -58,9 +62,9 @@
 										<label :for="'question_'+i+'_option_'+j+'_text'" class=control-label>Text:</label>
 										<input type=text :id="'question_'+i+'_option_'+j+'_text'" class=form-control v-model=opt.text>
 									</div>
+                                    <a class="btn btn-default btn-circle pull-right small glyphicon glyphicon-remove" @click=opt.remove></a>
 								</li>
 							</ol>
-							<button type=button class="btn btn-default" @click=question.addOption>Add Option</button>
 						</div>
 						<div v-if=question.showInstructions class="form-inline col-sm-offset-1">
 							<ol>
@@ -70,7 +74,6 @@
 									</div>
 								</li>
 							</ol>
-							<button type=button class="btn btn-default" @click=question.addOption>Add Instruction</button>
 						</div>
 					</li>
 				</ol>

@@ -49,3 +49,25 @@ li:last-child {
 		min-width : 700px;
 	}
 }
+
+.btn-circle {
+	width : 30px;
+	height : 30px;
+	text-align : center;
+	padding : 6px 0;
+	font-size : 12px;
+	line-height : 1.42;
+	border-radius : 50%;
+	border : 1px solid silver;
+}
+.btn-circle.small {
+	width : 24px;
+	height : 24px;
+	text-align : center;
+	padding : 5px 0;
+	font-size : 10px;
+	line-height : 1.2;
+	border-radius : 50%;
+	border : 1px solid silver;
+	color : gray;
+}

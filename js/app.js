@@ -1,13 +1,46 @@
 'use strict';
 
++function() {
+	var validTags = [
+		'b', 'i', 'u', 'ul', 'li',
+		'hr\\s*/?', // <hr/>
+		'font', 'font\\s+color\\s*=\\s*(&quot;|&apos;)(?:(?!\\1).)*\\1' // <font color="red">
+	].map(function(tag) {
+		return new RegExp('&lt;/?' + tag + '&gt;', 'ig');
+	});
+
+	String.prototype.escapeHTML = function(keepFormatting) {
+		var output = he.encode(this, { useNamedReferences : true });
+
+		if (keepFormatting) {
+			for (var i = 0; i < validTags.length; i++) {
+				var reTag = validTags[i], match;
+				while (match = reTag.exec(output)) {
+					var tag = match[0];
+					tag = '<' + tag.slice(4, tag.length-4).replace(/&quot;/g, '"').replace(/&apos;/g, "'") + '>';
+					output = output.slice(0, match.index) + tag + output.slice(match.index + match[0].length);
+					reTag.lastIndex -= match[0].length - tag.length;
+				}
+			}
+		}
+
+		return output;
+	};
+}();
+
 function Question(type, title, text, options) {
 	this.type = type || 'short';
 	this.title = title || '';
 	this.text = text || '';
 	this.options = options || (options = []);
 
+	var self = this;
+	this.remove = function() {
+		vm.questions.splice(vm.questions.indexOf(self), 1);
+	};
+
 	this.addOption = function() {
-		options.push(new Option());
+		options.push(new Option(self));
 	};
 
 	Object.defineProperties(this, {
@@ -26,16 +59,16 @@ function Question(type, title, text, options) {
 Question.prototype.toString = function() {
 	var out = '';
 	if (this.title) out += '::' + this.title + '::\n';
-	if (this.text) out += '[html]' + this.text + '\n';
+	if (this.text) out += '[html]' + this.text.escapeHTML(true) + '\n';
 	switch (this.type) {
 		case 'short':
 			return out + '{}'; // TODO
 		case 'long':
 			return out + '{}';
 		case 'multi':
-			return out + multiOptions(this.options);
+			return out + multiOptions(this.options).escapeHTML(true);
 		case 'single':
-			return out + singleOptions(this.options);
+			return out + singleOptions(this.options).escapeHTML(true);
 		case 'dehnadi':
 			return out + dehnadiCode(this.options) + dehnadiOptions(this.options);
 	}
@@ -125,7 +158,7 @@ function DehnadiInterpreter(instructions) {
 			return options;
 		}, [])
 		.map(option => ({
-			text : option.map(v => `${v[0]}=${v[1]}`).join('\t'),
+			text : option.map(v => `${v[0]}=${v[1]}`).join('   4   8'.replace(/./g, '&nbsp;')),
 			comment : option.__code.join(' / ')
 		}));
 }
@@ -231,13 +264,13 @@ function dehnadiOptions(instructions) {
 	instructions = instructions.map(function(instr) { return instr.text; });
 	return '{\n\t' + new DehnadiInterpreter(instructions).options.map(opt => {
 		var out = '// ' + opt.comment + '\n\t';
-		if (~out.indexOf('M2+S1')) out += '=';
+		if (/M2(\+S1)?(\s|$)/.test(opt.comment)) out += '=';
 		else out += '~';
-		return out + opt.text
+		return out + opt.text.replace(/([~=#{}])/g, '\\$1')
 	}).join('\n\t') + '\n}';
 }
 
-function Option(value, text) {
+function Option(question, value, text) {
 	this.value = value || 0;
 	this.text = text || "";
 
@@ -248,6 +281,11 @@ function Option(value, text) {
 			}
 		}
 	});
+
+	var self = this;
+	this.remove = function() {
+		question.options.splice(question.options.indexOf(self), 1);
+	};
 }
 
 function QuestionType(type, text) {
